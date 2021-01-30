@@ -1,7 +1,5 @@
 use async_trait::async_trait;
-use block_tools::{
-	blocks::{BlockType, Context},
-	display_api::{
+use block_tools::{Error, blocks::{BlockType, Context}, display_api::{
 		component::{
 			card::{CardComponent, CardHeader, CardIcon},
 			input::InputComponent,
@@ -9,13 +7,7 @@ use block_tools::{
 			DisplayComponent,
 		},
 		CreationObject, DisplayMeta, DisplayObject, PageMeta,
-	},
-	dsl,
-	dsl::prelude::*,
-	models::{BlockD, NewBlock},
-	schema::blocks,
-	Error,
-};
+	}, models::{Block, MinNewBlock}};
 
 pub struct DataBlock {}
 
@@ -25,39 +17,29 @@ impl BlockType for DataBlock {
 		"data"
 	}
 
-	async fn page_display(block: &BlockD, _context: &Context) -> Result<DisplayObject, Error> {
-		let data = || match &block.block_data {
-			Some(str) => Some(String::from(str)),
-			None => None,
-		};
-		let component = TextComponent {
-			text: data().unwrap_or("".into()),
-			color: None,
-			preset: None,
+	async fn page_display(block: &Block, _context: &Context) -> Result<DisplayObject, Error> {
+		let data = block.block_data.clone();
+		let data_string = &data.unwrap_or("".into());
+		let component = TextComponent::new(data_string);
+
+		let mut page = PageMeta::new().title("Data");
+
+		page = match data_string.as_str() {
+			"" => page,
+			_ => page.header(data_string),
 		};
 
-		let meta = DisplayMeta {
-			page: Some(PageMeta {
-				title: Some("Data".into()),
-				header: data(),
-			}),
-		};
-		Ok(DisplayObject {
-			display: Box::new(component),
-			meta: Some(meta),
-		})
+		let meta = DisplayMeta::new().page(page);
+		Ok(DisplayObject::new(Box::new(component)).meta(meta))
 	}
 
 	async fn embed_display(
-		block: &BlockD,
+		block: &Block,
 		_context: &Context,
 	) -> Result<Box<dyn DisplayComponent>, Error> {
 		let data: Option<String> = block.clone().block_data.clone();
-		let card_content = TextComponent {
-			text: data.unwrap_or("".into()),
-			color: None,
-			preset: None,
-		};
+
+		let card_content = TextComponent::new(&data.unwrap_or("".into()));
 		let component = CardComponent {
 			content: Box::new(card_content),
 			color: None,
@@ -71,18 +53,8 @@ impl BlockType for DataBlock {
 	}
 
 	async fn create_display(_context: &Context, _user_id: i32) -> Result<CreationObject, Error> {
-		let header = TextComponent {
-			preset: Some(TextPreset::Heading),
-			text: "New Data Block".into(),
-			color: None,
-		};
-		let main = InputComponent {
-			label: Some("Data".into()),
-			name: Some("DATA".into()),
-			confirm_cancel: None,
-			input_type: None,
-			initial_value: None,
-		};
+		let header = TextComponent::new("New Data Block").preset(TextPreset::Heading);
+		let main = InputComponent::new().label("Data").name("DATA");
 		let object = CreationObject {
 			header_component: Box::new(header),
 			main_component: Box::new(main),
@@ -91,19 +63,16 @@ impl BlockType for DataBlock {
 		Ok(object)
 	}
 
-	async fn create(input: String, context: &Context, user_id: i32) -> Result<BlockD, Error> {
+	async fn create(input: String, context: &Context, user_id: i32) -> Result<Block, Error> {
 		let conn = &context.pool.get()?;
 
-		let block = NewBlock {
+		let block = MinNewBlock {
 			block_type: "data",
-			created_at: std::time::SystemTime::now(),
-			updated_at: std::time::SystemTime::now(),
-			block_data: Some(input.as_str()),
 			owner_id: user_id,
-		};
+		}
+		.into()
+		.data(&input);
 
-		Ok(dsl::insert_into(blocks::table)
-			.values(&block)
-			.get_result(conn)?)
+		Ok(block.insert(conn)?)
 	}
 }
