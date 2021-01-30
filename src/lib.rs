@@ -1,5 +1,7 @@
 use async_trait::async_trait;
-use block_tools::{Error, blocks::{BlockType, Context}, display_api::{
+use block_tools::{
+	blocks::{BlockType, Context},
+	display_api::{
 		component::{
 			card::{CardComponent, CardHeader, CardIcon},
 			input::InputComponent,
@@ -7,7 +9,10 @@ use block_tools::{Error, blocks::{BlockType, Context}, display_api::{
 			DisplayComponent,
 		},
 		CreationObject, DisplayMeta, DisplayObject, PageMeta,
-	}, models::{Block, MinNewBlock}};
+	},
+	models::{Block, MinNewBlock},
+	Error,
+};
 
 pub struct DataBlock {}
 
