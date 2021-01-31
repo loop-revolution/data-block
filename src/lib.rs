@@ -1,5 +1,6 @@
 use async_trait::async_trait;
 use block_tools::{
+	auth::{require_token, validate_token},
 	blocks::{BlockType, Context},
 	display_api::{
 		component::{
@@ -8,24 +9,26 @@ use block_tools::{
 			text::{TextComponent, TextPreset},
 			DisplayComponent,
 		},
-		CreationObject, DisplayMeta, DisplayObject, PageMeta,
+		CreationObject, DisplayMeta, DisplayObject, MethodObject, PageMeta,
 	},
 	models::{Block, MinNewBlock},
-	Error,
+	BlockError, Error,
 };
 
 pub struct DataBlock {}
 
 #[async_trait]
 impl BlockType for DataBlock {
-	fn name(&self) -> &str {
-		"data"
+	fn name() -> String {
+		"data".to_string()
 	}
 
 	async fn page_display(block: &Block, _context: &Context) -> Result<DisplayObject, Error> {
 		let data = block.block_data.clone();
 		let data_string = &data.unwrap_or("".into());
-		let component = TextComponent::new(data_string);
+		let component = edit_data_component(block.id.to_string())
+			.initial_value(data_string)
+			.label("Data");
 
 		let mut page = PageMeta::new().title("Data");
 
@@ -70,9 +73,12 @@ impl BlockType for DataBlock {
 
 	async fn create(input: String, context: &Context, user_id: i32) -> Result<Block, Error> {
 		let conn = &context.pool.get()?;
+		let mut input = input;
+		input.remove(0);
+		input.pop();
 
 		let block = MinNewBlock {
-			block_type: "data",
+			block_type: &DataBlock::name(),
 			owner_id: user_id,
 		}
 		.into()
@@ -80,4 +86,48 @@ impl BlockType for DataBlock {
 
 		Ok(block.insert(conn)?)
 	}
+
+	async fn method_delegate(
+		context: &Context,
+		name: String,
+		block_id: i64,
+		args: String,
+	) -> Result<Block, Error> {
+		match name.as_str() {
+			"edit" => edit(context, block_id, args).await,
+			_ => Err(BlockError::MethodExist(name, DataBlock::name()).into()),
+		}
+	}
+}
+
+async fn edit(context: &Context, block_id: i64, args: String) -> Result<Block, Error> {
+	let conn = &context.pool.get()?;
+	let user_id = validate_token(require_token(context)?)?;
+	let access_err: Error =
+		BlockError::TypeGenericError(format!("Cannot edit data block {}", block_id)).into();
+	let block = Block::by_id(block_id, conn)?;
+	let block = match block {
+		Some(b) => b,
+		None => return Err(access_err),
+	};
+	if user_id != block.owner_id {
+		return Err(access_err);
+	}
+	let mut input = args;
+	input.remove(0);
+	input.pop();
+	let block = block.update_data(&input, conn)?;
+	Ok(block)
+}
+
+pub fn edit_data_component(block_id: String) -> InputComponent {
+	let method = MethodObject {
+		block_type: DataBlock::name(),
+		block_id: block_id,
+		method_name: "edit".into(),
+		arg_template: "$[DATA]$".into(),
+	};
+	InputComponent::new()
+		.name("DATA")
+		.with_confirm(method.into())
 }
