@@ -1,10 +1,10 @@
 use async_trait::async_trait;
 use block_tools::{
 	auth::{require_token, validate_token},
-	blocks::{BlockType, Context},
+	blocks::{BlockType, Context, TypeInfo},
 	display_api::{
 		component::{
-			card::{CardComponent, CardHeader, CardIcon},
+			card::{CardComponent, CardHeader, Icon},
 			input::InputComponent,
 			text::{TextComponent, TextPreset},
 			DisplayComponent,
@@ -15,12 +15,22 @@ use block_tools::{
 	BlockError, Error,
 };
 
+pub const BLOCK_NAME: &'static str = "data";
+
 pub struct DataBlock {}
 
 #[async_trait]
 impl BlockType for DataBlock {
 	fn name() -> String {
-		"data".to_string()
+		BLOCK_NAME.to_string()
+	}
+
+	fn info() -> TypeInfo {
+		TypeInfo {
+			name: Self::name(),
+			icon: Icon::Box,
+			desc: "The simplest block that represents raw rext and nothing more".to_string(),
+		}
 	}
 
 	async fn page_display(block: &Block, _context: &Context) -> Result<DisplayObject, Error> {
@@ -53,7 +63,7 @@ impl BlockType for DataBlock {
 			color: None,
 			header: CardHeader {
 				title: "Data".into(),
-				icon: Some(CardIcon::Box),
+				icon: Some(Icon::Box),
 				block_id: Some(block.id.to_string()),
 			},
 		};
