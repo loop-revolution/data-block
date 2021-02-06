@@ -49,10 +49,7 @@ impl BlockType for DataBlock {
 		Ok(DisplayObject::new(Box::new(component)).meta(meta))
 	}
 
-	fn embed_display(
-		block: &Block,
-		_context: &Context,
-	) -> Box<dyn DisplayComponent> {
+	fn embed_display(block: &Block, _context: &Context) -> Box<dyn DisplayComponent> {
 		let data: Option<String> = block.clone().block_data.clone();
 
 		let card_content = TextComponent::new(&data.unwrap_or("".into()));
