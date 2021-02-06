@@ -103,6 +103,10 @@ impl BlockType for DataBlock {
 			_ => Err(BlockError::MethodExist(name, DataBlock::name()).into()),
 		}
 	}
+
+	fn block_name(block: &Block, context: &Context) -> Result<String, Error> {
+			Ok("Data Block".into())
+	}
 }
 
 fn edit(context: &Context, block_id: i64, args: String) -> Result<Block, Error> {
