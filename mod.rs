@@ -1,4 +1,3 @@
-use async_trait::async_trait;
 use block_tools::{
 	auth::{require_token, validate_token},
 	blocks::{BlockType, Context, TypeInfo},
@@ -19,7 +18,6 @@ pub const BLOCK_NAME: &'static str = "data";
 
 pub struct DataBlock {}
 
-#[async_trait]
 impl BlockType for DataBlock {
 	fn name() -> String {
 		BLOCK_NAME.to_string()
@@ -33,7 +31,7 @@ impl BlockType for DataBlock {
 		}
 	}
 
-	async fn page_display(block: &Block, _context: &Context) -> Result<DisplayObject, Error> {
+	fn page_display(block: &Block, _context: &Context) -> Result<DisplayObject, Error> {
 		let data = block.block_data.clone();
 		let data_string = &data.unwrap_or("".into());
 		let component = edit_data_component(block.id.to_string())
@@ -51,10 +49,10 @@ impl BlockType for DataBlock {
 		Ok(DisplayObject::new(Box::new(component)).meta(meta))
 	}
 
-	async fn embed_display(
+	fn embed_display(
 		block: &Block,
 		_context: &Context,
-	) -> Result<Box<dyn DisplayComponent>, Error> {
+	) -> Box<dyn DisplayComponent> {
 		let data: Option<String> = block.clone().block_data.clone();
 
 		let card_content = TextComponent::new(&data.unwrap_or("".into()));
@@ -67,10 +65,10 @@ impl BlockType for DataBlock {
 				block_id: Some(block.id.to_string()),
 			},
 		};
-		Ok(Box::new(component))
+		Box::new(component)
 	}
 
-	async fn create_display(_context: &Context, _user_id: i32) -> Result<CreationObject, Error> {
+	fn create_display(_context: &Context, _user_id: i32) -> Result<CreationObject, Error> {
 		let header = TextComponent::new("New Data Block").preset(TextPreset::Heading);
 		let main = InputComponent::new().label("Data").name("DATA");
 		let object = CreationObject {
@@ -81,7 +79,7 @@ impl BlockType for DataBlock {
 		Ok(object)
 	}
 
-	async fn create(input: String, context: &Context, user_id: i32) -> Result<Block, Error> {
+	fn create(input: String, context: &Context, user_id: i32) -> Result<Block, Error> {
 		let conn = &context.pool.get()?;
 		let mut input = input;
 		input.remove(0);
@@ -97,20 +95,20 @@ impl BlockType for DataBlock {
 		Ok(block.insert(conn)?)
 	}
 
-	async fn method_delegate(
+	fn method_delegate(
 		context: &Context,
 		name: String,
 		block_id: i64,
 		args: String,
 	) -> Result<Block, Error> {
 		match name.as_str() {
-			"edit" => edit(context, block_id, args).await,
+			"edit" => edit(context, block_id, args),
 			_ => Err(BlockError::MethodExist(name, DataBlock::name()).into()),
 		}
 	}
 }
 
-async fn edit(context: &Context, block_id: i64, args: String) -> Result<Block, Error> {
+fn edit(context: &Context, block_id: i64, args: String) -> Result<Block, Error> {
 	let conn = &context.pool.get()?;
 	let user_id = validate_token(require_token(context)?)?;
 	let access_err: Error =
