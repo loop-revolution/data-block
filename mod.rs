@@ -1,5 +1,8 @@
 use block_tools::{
-	auth::{require_token, validate_token},
+	auth::{
+		permissions::{has_perm_level, PermLevel},
+		require_token, validate_token,
+	},
 	blocks::{BlockType, Context, TypeInfo},
 	display_api::{
 		component::{
@@ -119,7 +122,7 @@ fn edit(context: &Context, block_id: i64, args: String) -> Result<Block, Error> 
 		Some(b) => b,
 		None => return Err(access_err),
 	};
-	if user_id != block.owner_id {
+	if !has_perm_level(user_id, &block, PermLevel::Edit) {
 		return Err(access_err);
 	}
 	let mut input = args;
