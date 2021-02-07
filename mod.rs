@@ -104,8 +104,8 @@ impl BlockType for DataBlock {
 		}
 	}
 
-	fn block_name(block: &Block, context: &Context) -> Result<String, Error> {
-			Ok("Data Block".into())
+	fn block_name(_block: &Block, _context: &Context) -> Result<String, Error> {
+		Ok("Data Block".into())
 	}
 }
 
