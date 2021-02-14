@@ -114,7 +114,7 @@ impl BlockType for DataBlock {
 
 fn edit(context: &Context, block_id: i64, args: String) -> Result<Block, Error> {
 	let conn = &context.pool.get()?;
-	let user_id = validate_token(require_token(context)?)?;
+	let user_id = validate_token(&require_token(context)?)?;
 	let access_err: Error =
 		BlockError::TypeGenericError(format!("Cannot edit data block {}", block_id)).into();
 	let block = Block::by_id(block_id, conn)?;
