@@ -17,7 +17,7 @@ use block_tools::{
 	BlockError, Error,
 };
 
-pub const BLOCK_NAME: &'static str = "data";
+pub const BLOCK_NAME: &str = "data";
 
 pub struct DataBlock {}
 
@@ -36,7 +36,7 @@ impl BlockType for DataBlock {
 
 	fn page_display(block: &Block, _context: &Context) -> Result<DisplayObject, Error> {
 		let data = block.block_data.clone();
-		let data_string = &data.unwrap_or("".into());
+		let data_string = &data.unwrap_or_else(|| "".into());
 		let component = edit_data_component(block.id.to_string())
 			.initial_value(data_string)
 			.label("Data");
@@ -53,9 +53,9 @@ impl BlockType for DataBlock {
 	}
 
 	fn embed_display(block: &Block, _context: &Context) -> Box<dyn DisplayComponent> {
-		let data: Option<String> = block.clone().block_data.clone();
+		let data: Option<String> = block.block_data.clone();
 
-		let card_content = TextComponent::new(&data.unwrap_or("".into()));
+		let card_content = TextComponent::new(&data.unwrap_or_else(|| "".into()));
 		let component = CardComponent {
 			content: Box::new(card_content),
 			color: None,
@@ -92,7 +92,7 @@ impl BlockType for DataBlock {
 		.into()
 		.data(&input);
 
-		Ok(block.insert(conn)?)
+		block.insert(conn)
 	}
 
 	fn method_delegate(
@@ -135,7 +135,7 @@ fn edit(context: &Context, block_id: i64, args: String) -> Result<Block, Error> 
 pub fn edit_data_component(block_id: String) -> InputComponent {
 	let method = MethodObject {
 		block_type: DataBlock::name(),
-		block_id: block_id,
+		block_id,
 		method_name: "edit".into(),
 		arg_template: "$[DATA]$".into(),
 	};
