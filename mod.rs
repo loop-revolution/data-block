@@ -48,7 +48,7 @@ impl BlockType for DataBlock {
 			_ => page.header(data_string),
 		};
 
-		let meta = DisplayMeta::new().page(page);
+		let meta = DisplayMeta::default().page(page);
 		Ok(DisplayObject::new(Box::new(component)).meta(meta))
 	}
 
