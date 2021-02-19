@@ -1,5 +1,6 @@
 use block_tools::{
 	auth::{
+		optional_token, optional_validate_token,
 		permissions::{has_perm_level, PermLevel},
 		require_token, validate_token,
 	},
@@ -8,6 +9,7 @@ use block_tools::{
 		component::{
 			card::{CardComponent, CardHeader, Icon},
 			input::InputComponent,
+			menu::MenuComponent,
 			text::{TextComponent, TextPreset},
 			DisplayComponent,
 		},
@@ -34,7 +36,8 @@ impl BlockType for DataBlock {
 		}
 	}
 
-	fn page_display(block: &Block, _context: &Context) -> Result<DisplayObject, Error> {
+	fn page_display(block: &Block, context: &Context) -> Result<DisplayObject, Error> {
+		let user_id = optional_validate_token(optional_token(context))?;
 		let data = block.block_data.clone();
 		let data_string = &data.unwrap_or_else(|| "".into());
 		let component = edit_data_component(block.id.to_string())
@@ -43,16 +46,21 @@ impl BlockType for DataBlock {
 
 		let mut page = PageMeta::new().title("Data");
 
+		if let Some(user_id) = user_id {
+			page.menu = Some(MenuComponent::load_from_block(block, user_id));
+		}
+
 		page = match data_string.as_str() {
 			"" => page,
 			_ => page.header(data_string),
 		};
 
 		let meta = DisplayMeta::default().page(page);
-		Ok(DisplayObject::new(Box::new(component)).meta(meta))
+		Ok(DisplayObject::new(box component).meta(meta))
 	}
 
-	fn embed_display(block: &Block, _context: &Context) -> Box<dyn DisplayComponent> {
+	fn embed_display(block: &Block, context: &Context) -> Box<dyn DisplayComponent> {
+		let user_id = validate_token(&require_token(context).unwrap()).unwrap();
 		let data: Option<String> = block.block_data.clone();
 
 		let card_content = TextComponent::new(&data.unwrap_or_else(|| "".into()));
@@ -63,7 +71,7 @@ impl BlockType for DataBlock {
 				title: "Data".into(),
 				icon: Some(Icon::Box),
 				block_id: Some(block.id.to_string()),
-				menu: None,
+				menu: Some(MenuComponent::load_from_block(block, user_id)),
 			},
 		};
 		Box::new(component)
