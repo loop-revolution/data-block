@@ -63,6 +63,7 @@ impl BlockType for DataBlock {
 				title: "Data".into(),
 				icon: Some(Icon::Box),
 				block_id: Some(block.id.to_string()),
+				menu: None,
 			},
 		};
 		Box::new(component)
