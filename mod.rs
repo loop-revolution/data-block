@@ -7,7 +7,8 @@ use block_tools::{
 	blocks::{BlockType, Context, TypeInfo},
 	display_api::{
 		component::{
-			card::{CardComponent, CardHeader, Icon},
+			card::{CardComponent, CardHeader},
+			icon::Icon,
 			input::InputComponent,
 			menu::MenuComponent,
 			text::{TextComponent, TextPreset},
