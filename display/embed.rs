@@ -24,7 +24,7 @@ pub fn embed_display(block: &Block, context: &Context) -> Box<dyn DisplayCompone
 
 	let component = CardComponent {
 		content: Box::new(card_content),
-		color: None,
+		color: block.color.clone(),
 		header,
 	};
 	Box::new(component)
