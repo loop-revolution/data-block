@@ -8,10 +8,8 @@ use block_tools::{
 	Error,
 };
 
-use self::display::{create::create_display, embed::embed_display, page::page_display};
-mod display;
+pub mod display;
 mod methods;
-pub use display::masked_data_edit::masked_data_edit;
 
 pub const BLOCK_NAME: &str = "data";
 
@@ -31,19 +29,19 @@ impl BlockType for DataBlock {
 	}
 
 	fn page_display(block: &Block, context: &Context) -> Result<DisplayObject, Error> {
-		page_display(block, context)
+		Self::handle_page_display(block, context)
 	}
 
 	fn embed_display(block: &Block, context: &Context) -> Box<dyn DisplayComponent> {
-		embed_display(block, context)
+		Self::handle_embed_display(block, context)
 	}
 
 	fn create_display(_context: &Context, _user_id: i32) -> Result<CreationObject, Error> {
-		create_display()
+		Self::handle_create_display()
 	}
 
 	fn create(input: String, context: &Context, user_id: i32) -> Result<Block, Error> {
-		methods::create::create(input, context, user_id)
+		Self::handle_create(input, context, user_id)
 	}
 
 	fn method_delegate(
@@ -52,7 +50,7 @@ impl BlockType for DataBlock {
 		block_id: i64,
 		args: String,
 	) -> Result<Block, Error> {
-		methods::method_delegate(context, name, block_id, args)
+		Self::handle_method_delegate(context, name, block_id, args)
 	}
 
 	fn block_name(_block: &Block, _context: &Context) -> Result<String, Error> {

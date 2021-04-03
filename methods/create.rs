@@ -6,18 +6,20 @@ use block_tools::{
 	Error,
 };
 
-pub fn create(input: String, context: &Context, user_id: i32) -> Result<Block, Error> {
-	let conn = &context.pool.get()?;
-	let mut input = input;
-	input.remove(0);
-	input.pop();
+impl DataBlock {
+	pub fn handle_create(input: String, context: &Context, user_id: i32) -> Result<Block, Error> {
+		let conn = &context.pool.get()?;
+		let mut input = input;
+		input.remove(0);
+		input.pop();
 
-	let block = MinNewBlock {
-		block_type: &DataBlock::name(),
-		owner_id: user_id,
+		let block = MinNewBlock {
+			block_type: &DataBlock::name(),
+			owner_id: user_id,
+		}
+		.into()
+		.data(&input);
+
+		block.insert(conn)
 	}
-	.into()
-	.data(&input);
-
-	block.insert(conn)
 }

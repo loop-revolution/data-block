@@ -9,13 +9,17 @@ use block_tools::{
 	Error,
 };
 
-pub fn create_display() -> Result<CreationObject, Error> {
-	let header = TextComponent::new("New Data Block").preset(TextPreset::Heading);
-	let main = InputComponent::new().label("Data").name("DATA");
-	let object = CreationObject {
-		header_component: Box::new(header),
-		main_component: Box::new(main),
-		input_template: "$[DATA]$".into(),
-	};
-	Ok(object)
+use crate::blocks::data_block::DataBlock;
+
+impl DataBlock {
+	pub fn handle_create_display() -> Result<CreationObject, Error> {
+		let header = TextComponent::new("New Data Block").preset(TextPreset::Heading);
+		let main = InputComponent::new().label("Data").name("DATA");
+		let object = CreationObject {
+			header_component: box header,
+			main_component: box main,
+			input_template: "$[DATA]$".into(),
+		};
+		Ok(object)
+	}
 }
