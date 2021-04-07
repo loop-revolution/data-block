@@ -1,12 +1,4 @@
-use block_tools::{
-	blocks::{BlockType, Context, TypeInfo},
-	display_api::{
-		component::{icon::Icon, DisplayComponent},
-		CreationObject, DisplayObject,
-	},
-	models::Block,
-	Error,
-};
+use block_tools::{Error, blocks::{BlockType, Context, TypeInfo}, display_api::{CreationObject, DisplayObject, component::{DisplayComponent, atomic::icon::Icon}}, models::Block};
 
 pub mod display;
 mod methods;
@@ -32,7 +24,7 @@ impl BlockType for DataBlock {
 		Self::handle_page_display(block, context)
 	}
 
-	fn embed_display(block: &Block, context: &Context) -> Box<dyn DisplayComponent> {
+	fn embed_display(block: &Block, context: &Context) -> DisplayComponent {
 		Self::handle_embed_display(block, context)
 	}
 

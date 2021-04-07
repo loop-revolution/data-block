@@ -1,11 +1,11 @@
 use crate::blocks::data_block::DataBlock;
-use block_tools::blocks::BlockType;
-use block_tools::display_api::{
-	component::{
-		input::InputComponent,
-		text::{TextComponent, TextPreset},
+use block_tools::display_api::MethodObject;
+use block_tools::{
+	blocks::BlockType,
+	display_api::component::{
+		atomic::text::{TextComponent, TextPreset},
+		form::input::InputComponent,
 	},
-	MethodObject,
 };
 
 impl DataBlock {
@@ -22,17 +22,19 @@ impl DataBlock {
 			block_id,
 			method_name: "edit".into(),
 		};
-		let input = InputComponent::new()
-			.name(&name)
-			.with_confirm(method.into());
+		let mut input = InputComponent {
+			name: Some(name),
+			..Default::default()
+		};
+		input.with_confirm(method.into());
 		if let Some(value) = value {
 			let mut mask = TextComponent::new(value.clone());
 			if heading {
-				mask = mask.preset(TextPreset::Heading)
+				mask.preset = Some(TextPreset::Heading);
 			}
-			input.initial_value(&value).mask(mask)
-		} else {
-			input
+			input.initial_value = Some(value);
+			input.mask = Some(mask);
 		}
+		input
 	}
 }

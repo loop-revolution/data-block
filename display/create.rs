@@ -1,23 +1,20 @@
-use block_tools::{
-	display_api::{
-		component::{
-			input::InputComponent,
-			text::{TextComponent, TextPreset},
-		},
-		CreationObject,
-	},
-	Error,
-};
+use block_tools::{Error, display_api::{CreationObject, component::{atomic::text::TextComponent, form::input::InputComponent}}};
 
 use crate::blocks::data_block::DataBlock;
 
 impl DataBlock {
 	pub fn handle_create_display() -> Result<CreationObject, Error> {
-		let header = TextComponent::new("New Data Block").preset(TextPreset::Heading);
-		let main = InputComponent::new().label("Data").name("DATA");
+		let header = TextComponent::heading("New Data Block");
+
+		let main = InputComponent {
+			label: Some("Data".to_string()),
+			name: Some("DATA".to_string()),
+			..Default::default()
+		};
+
 		let object = CreationObject {
-			header_component: box header,
-			main_component: box main,
+			header_component: header.into(),
+			main_component: main.into(),
 			input_template: "$[DATA]$".into(),
 		};
 		Ok(object)
