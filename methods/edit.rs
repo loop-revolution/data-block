@@ -5,13 +5,13 @@ use block_tools::{
 	},
 	blocks::Context,
 	models::Block,
-	BlockError, Error,
+	BlockError, LoopError,
 };
 
-pub fn edit(context: &Context, block_id: i64, args: String) -> Result<Block, Error> {
+pub fn edit(context: &Context, block_id: i64, args: String) -> Result<Block, LoopError> {
 	let conn = &context.pool.get()?;
 	let user_id = validate_token(&require_token(context)?)?;
-	let access_err: Error =
+	let access_err: LoopError =
 		BlockError::TypeGenericError(format!("Cannot edit data block {}", block_id)).into();
 	let block = Block::by_id(block_id, conn)?;
 	let block = match block {

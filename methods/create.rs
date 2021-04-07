@@ -3,10 +3,10 @@ use block_tools::blocks::BlockType;
 use block_tools::{
 	blocks::Context,
 	models::{Block, MinNewBlock},
-	Error,
+	LoopError,
 };
 
-pub fn create(input: String, context: &Context, user_id: i32) -> Result<Block, Error> {
+pub fn create(input: String, context: &Context, user_id: i32) -> Result<Block, LoopError> {
 	let conn = &context.pool.get()?;
 	let mut input = input;
 	input.remove(0);

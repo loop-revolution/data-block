@@ -5,7 +5,7 @@ use block_tools::{
 		CreationObject, DisplayObject,
 	},
 	models::Block,
-	Error,
+	LoopError,
 };
 
 use self::display::{create::create_display, embed::embed_display, page::page_display};
@@ -30,7 +30,7 @@ impl BlockType for DataBlock {
 		}
 	}
 
-	fn page_display(block: &Block, context: &Context) -> Result<DisplayObject, Error> {
+	fn page_display(block: &Block, context: &Context) -> Result<DisplayObject, LoopError> {
 		page_display(block, context)
 	}
 
@@ -38,11 +38,11 @@ impl BlockType for DataBlock {
 		embed_display(block, context)
 	}
 
-	fn create_display(_context: &Context, _user_id: i32) -> Result<CreationObject, Error> {
+	fn create_display(_context: &Context, _user_id: i32) -> Result<CreationObject, LoopError> {
 		create_display()
 	}
 
-	fn create(input: String, context: &Context, user_id: i32) -> Result<Block, Error> {
+	fn create(input: String, context: &Context, user_id: i32) -> Result<Block, LoopError> {
 		methods::create::create(input, context, user_id)
 	}
 
@@ -51,11 +51,11 @@ impl BlockType for DataBlock {
 		name: String,
 		block_id: i64,
 		args: String,
-	) -> Result<Block, Error> {
+	) -> Result<Block, LoopError> {
 		methods::method_delegate(context, name, block_id, args)
 	}
 
-	fn block_name(_block: &Block, _context: &Context) -> Result<String, Error> {
+	fn block_name(_block: &Block, _context: &Context) -> Result<String, LoopError> {
 		Ok("Data Block".into())
 	}
 }

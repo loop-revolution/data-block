@@ -10,10 +10,10 @@ use block_tools::{
 		DisplayMeta, DisplayObject, PageMeta,
 	},
 	models::Block,
-	Error,
+	LoopError,
 };
 
-pub fn page_display(block: &Block, context: &Context) -> Result<DisplayObject, Error> {
+pub fn page_display(block: &Block, context: &Context) -> Result<DisplayObject, LoopError> {
 	let user_id = optional_validate_token(optional_token(context))?;
 
 	// Make access to data details easier

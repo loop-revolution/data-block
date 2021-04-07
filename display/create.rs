@@ -6,10 +6,10 @@ use block_tools::{
 		},
 		CreationObject,
 	},
-	Error,
+	LoopError,
 };
 
-pub fn create_display() -> Result<CreationObject, Error> {
+pub fn create_display() -> Result<CreationObject, LoopError> {
 	let header = TextComponent::new("New Data Block").preset(TextPreset::Heading);
 	let main = InputComponent::new().label("Data").name("DATA");
 	let object = CreationObject {
