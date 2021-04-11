@@ -8,7 +8,7 @@ use block_tools::{
 	LoopError,
 };
 
-pub mod display;
+mod display;
 mod methods;
 
 pub const BLOCK_NAME: &str = "data";
