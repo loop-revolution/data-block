@@ -4,7 +4,7 @@ use block_tools::{
 	display_api::component::{
 		atomic::{icon::Icon, text::TextComponent},
 		layout::card::{CardComponent, CardHeader},
-		menu::menu::MenuComponent,
+		menus::menu::MenuComponent,
 		DisplayComponent,
 	},
 	models::Block,

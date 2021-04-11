@@ -1,4 +1,10 @@
-use block_tools::{Error, display_api::{CreationObject, component::{atomic::text::TextComponent, form::input::InputComponent}}};
+use block_tools::{
+	display_api::{
+		component::{atomic::text::TextComponent, form::input::InputComponent},
+		CreationObject,
+	},
+	Error,
+};
 
 use crate::blocks::data_block::DataBlock;
 

@@ -6,7 +6,7 @@ use block_tools::{
 	blocks::Context,
 	display_api::{
 		component::{
-			atomic::text::TextComponent, form::input::InputSize, menu::menu::MenuComponent,
+			atomic::text::TextComponent, form::input::InputSize, menus::menu::MenuComponent,
 			DisplayComponent,
 		},
 		DisplayMeta, DisplayObject, PageMeta,

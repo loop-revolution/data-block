@@ -1,4 +1,12 @@
-use block_tools::{Error, blocks::{BlockType, Context, TypeInfo}, display_api::{CreationObject, DisplayObject, component::{DisplayComponent, atomic::icon::Icon}}, models::Block};
+use block_tools::{
+	blocks::{BlockType, Context, TypeInfo},
+	display_api::{
+		component::{atomic::icon::Icon, DisplayComponent},
+		CreationObject, DisplayObject,
+	},
+	models::Block,
+	Error,
+};
 
 pub mod display;
 mod methods;
