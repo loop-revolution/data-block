@@ -1,6 +1,6 @@
 use crate::blocks::data_block::DataBlock;
 use block_tools::blocks::BlockType;
-use block_tools::{blocks::Context, models::Block, BlockError, Error};
+use block_tools::{blocks::Context, models::Block, BlockError, LoopError};
 pub mod create;
 mod edit;
 

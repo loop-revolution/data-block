@@ -12,7 +12,7 @@ use block_tools::{
 		DisplayMeta, DisplayObject, PageMeta,
 	},
 	models::Block,
-	Error,
+	LoopError,
 };
 
 use crate::blocks::data_block::DataBlock;

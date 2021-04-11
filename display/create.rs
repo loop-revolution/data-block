@@ -3,7 +3,7 @@ use block_tools::{
 		component::{atomic::text::TextComponent, form::input::InputComponent},
 		CreationObject,
 	},
-	Error,
+	LoopError,
 };
 
 use crate::blocks::data_block::DataBlock;

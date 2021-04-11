@@ -5,7 +5,7 @@ use block_tools::{
 		CreationObject, DisplayObject,
 	},
 	models::Block,
-	Error,
+	LoopError,
 };
 
 pub mod display;
@@ -53,7 +53,7 @@ impl BlockType for DataBlock {
 		Self::handle_method_delegate(context, name, block_id, args)
 	}
 
-	fn block_name(_block: &Block, _context: &Context) -> Result<String, Error> {
+	fn block_name(_block: &Block, _context: &Context) -> Result<String, LoopError> {
 		Ok("Data Block".into())
 	}
 }

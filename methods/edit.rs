@@ -5,7 +5,7 @@ use block_tools::{
 	},
 	blocks::Context,
 	models::Block,
-	BlockError, Error,
+	BlockError, LoopError,
 };
 
 use crate::blocks::data_block::DataBlock;
