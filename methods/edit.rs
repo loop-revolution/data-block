@@ -11,10 +11,10 @@ use block_tools::{
 use crate::blocks::data_block::DataBlock;
 
 impl DataBlock {
-	pub fn edit_method(context: &Context, block_id: i64, args: String) -> Result<Block, Error> {
+	pub fn edit_method(context: &Context, block_id: i64, args: String) -> Result<Block, LoopError> {
 		let conn = &context.pool.get()?;
 		let user_id = validate_token(&require_token(context)?)?;
-		let access_err: Error =
+		let access_err: LoopError =
 			BlockError::TypeGenericError(format!("Cannot edit data block {}", block_id)).into();
 		let block = Block::by_id(block_id, conn)?;
 		let block = match block {

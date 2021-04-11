@@ -10,7 +10,7 @@ impl DataBlock {
 		name: String,
 		block_id: i64,
 		args: String,
-	) -> Result<Block, Error> {
+	) -> Result<Block, LoopError> {
 		match name.as_str() {
 			"edit" => Self::edit_method(context, block_id, args),
 			_ => Err(BlockError::MethodExist(name, DataBlock::name()).into()),

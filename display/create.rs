@@ -9,7 +9,7 @@ use block_tools::{
 use crate::blocks::data_block::DataBlock;
 
 impl DataBlock {
-	pub fn handle_create_display() -> Result<CreationObject, Error> {
+	pub fn handle_create_display() -> Result<CreationObject, LoopError> {
 		let header = TextComponent::heading("New Data Block");
 
 		let main = InputComponent {
