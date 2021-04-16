@@ -8,12 +8,17 @@ use block_tools::{
 		DisplayComponent,
 	},
 	models::Block,
+	LoopError,
 };
 
 use crate::blocks::data_block::DataBlock;
 
 impl DataBlock {
-	pub fn handle_embed_display(block: &Block, context: &Context) -> DisplayComponent {
+	pub fn handle_embed_display(
+		block: &Block,
+		context: &Context,
+	) -> Result<DisplayComponent, LoopError> {
+		let conn = &context.conn()?;
 		let user_id = optional_validate_token(optional_token(context)).unwrap();
 		let data: Option<String> = block.block_data.clone();
 
@@ -25,14 +30,16 @@ impl DataBlock {
 			..CardHeader::new("Data")
 		};
 		if let Some(user_id) = user_id {
-			header.menu = Some(MenuComponent::from_block(block, user_id));
+			let mut menu = MenuComponent::from_block(block, user_id);
+			menu.load_comments(conn)?;
+			header.menu = Some(menu);
 		}
 
-		CardComponent {
+		Ok(CardComponent {
 			content: box card_content.into(),
 			color: block.color.clone(),
 			header: box header,
 		}
-		.into()
+		.into())
 	}
 }

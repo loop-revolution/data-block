@@ -22,6 +22,7 @@ impl DataBlock {
 		block: &Block,
 		context: &Context,
 	) -> Result<DisplayObject, LoopError> {
+		let conn = &context.conn()?;
 		let user_id = optional_validate_token(optional_token(context))?;
 
 		// Make access to data details easier
@@ -36,8 +37,10 @@ impl DataBlock {
 		};
 
 		if let Some(user_id) = user_id {
+			let mut menu = MenuComponent::from_block(block, user_id);
+			menu.load_comments(conn)?;
 			// Add a menu to the page
-			page.menu = Some(MenuComponent::from_block(block, user_id));
+			page.menu = Some(menu);
 			// If the user can edit it the data, make it possible to edit
 			if has_perm_level(user_id, block, PermLevel::Edit) {
 				let mut input = Self::masked_editable_data(
