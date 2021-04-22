@@ -38,7 +38,7 @@ impl DataBlock {
 		Ok(CardComponent {
 			content: box card_content.into(),
 			color: block.color.clone(),
-			header: box header,
+			header: Some(box header),
 		}
 		.into())
 	}
